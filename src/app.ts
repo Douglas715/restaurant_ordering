@@ -12,14 +12,20 @@ app.get("/", (req, res) => {
     });
 });
 
+
+const pizzaCategoryId = randomUUID();
+const drinksCategoryId = randomUUID();
+
+
+// Categories
 const categories = [
     {
-        "id": randomUUID(),
+        "id": pizzaCategoryId,
         "name": "Pizzas",
         "description": "Pizzas salgadas com sabores tradicionais, especiais e opções personalizadas."
     },
     {
-        "id": randomUUID(),
+        "id": drinksCategoryId,
         "name": "Bebidas",
         "description": "Bebidas para acompanhar a refeição, incluindo refrigerantes, sucos, águas e outras opções."
     },
@@ -33,14 +39,14 @@ const categories = [
 const products = [
     {
         "id": randomUUID(),
-        "categoryId": 1,
+        "categoryId": pizzaCategoryId,
         "name": "Pizza Calabresa",
         "description": "Pizza com molho de tomate, mussarela, calabresa fatiada, cebola e orégano.",
         "price": 49.90
     },
     {
         "id": randomUUID(),
-        "categoryId": 2,
+        "categoryId": drinksCategoryId,
         "name": "Coca-Cola 2L",
         "description": "Refrigerante Coca-Cola de 2 litros, ideal para acompanhar a pizza.",
         "price": 12.90
@@ -72,6 +78,58 @@ app.get("/categories/:id", (req, res) => {
     res.status(200).json(category);
 });
 
+
+//post categories
+app.post("/categories/", (req, res) => {
+   const category = {
+        id: randomUUID(),
+        ...req.body
+   };
+
+   categories.push(category);
+
+    res.status(201).json(category);
+});
+
+
+app.put("/categories/:id", (req, res) => {
+    const category = categories.find((category) => {
+        return category.id == req.params.id
+    });
+
+    if (!category) {
+        return res.status(404).json({
+            message: "Categoria não encontrada.",
+        });
+    }
+
+category.name = req.body.name;
+category.description = req.body.description;
+
+    res.status(200).json(category);
+});
+
+app.delete("/categories/:id", (req, res) => {
+    const category = categories.find((category) => {
+        return category.id == req.params.id
+    });
+
+    if (!category) {
+        return res.status(404).json({
+            message: "Categoria não encontrada.",
+        });
+    }
+
+const incdex = categories.indexOf(category);
+categories.splice(incdex, 1);
+
+    res.status(200).json({
+        message: "Categoria deletada com sucesso."
+    });
+});
+
+
+// Products    
 app.get("/products", (req, res) => {
     res.status(200).json(products);
 });
@@ -83,11 +141,58 @@ app.get("/products/:id", (req, res) => {
 
     if (!product) {
         return res.status(404).json({
-            message: "Categoria não encontrada.",
+            message: "Produto não encontrado.",
         });
     }
 
     res.status(200).json(product);
 });
 
+app.post("/products", (req, res) => {
+    const product = {
+        id: randomUUID(),
+        ...req.body
+    };
+
+    products.push(product);
+
+
+    res.status(200).json(product);
+});
+
+app.put("/products/:id", (req, res) => {
+    const product = products.find((product) => {
+        return product.id == req.params.id
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Produto não encontrado.",
+        });
+    }
+
+product.name = req.body.name;
+product.description = req.body.description;
+
+    res.status(200).json(product);
+});
+
+app.delete("/products/:id", (req, res) => {
+    const product = products.find((product) => {
+        return product.id == req.params.id
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Produto não encontrado.",
+        });
+    }
+
+const index = products.indexOf(product);
+products.splice(index, 1);
+
+    res.status(200).json({
+        message: "Produto deletado com sucesso."
+    });
+});
 export default app;
